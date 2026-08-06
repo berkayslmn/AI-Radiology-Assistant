@@ -85,7 +85,7 @@ if __name__ == '__main__':
         for images, labels in tqdm(val_loader, desc="İşleniyor"):
             images = images.to(device)
             outputs = model(images)
-            probs = torch.sigmoid(outputs)  # Logits'i 0-1 arası olasılıklara çevir
+            probs = torch.sigmoid(outputs)
 
             all_preds.append(probs.cpu().numpy())
             all_labels.append(labels.numpy())
