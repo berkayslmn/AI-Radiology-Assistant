@@ -16,7 +16,7 @@ EPOCHS = 20
 LEARNING_RATE = 1e-4
 NUM_CLASSES = 14
 EARLY_STOPPING_PATIENCE = 4
-
+ 
 CLASS_NAMES = ['Atelectasis', 'Cardiomegaly', 'Effusion', 'Infiltration', 'Mass',
                'Nodule', 'Pneumonia', 'Pneumothorax', 'Consolidation', 'Edema',
                'Emphysema', 'Fibrosis', 'Pleural_Thickening', 'Hernia']
