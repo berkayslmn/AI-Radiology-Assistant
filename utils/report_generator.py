@@ -9,7 +9,7 @@ def generate_medical_report(findings_text):
         if not api_key:
             return "Hata: secrets.toml dosyasında geçerli bir API anahtarı bulunamadı."
 
-        genai.configure(api_key=api_key)
+        genai.configure(api_key=api_key) 
 
         model = genai.GenerativeModel("gemini-3.6-flash")
 
