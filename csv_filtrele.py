@@ -6,7 +6,7 @@ original_csv = 'veriseti/Data_Entry_2017.csv'
 filtered_csv = 'veriseti/Filtered_Data_Entry.csv'
 
 print("Klasördeki görseller taranıyor...")
-mevcut_gorseller = set(os.listdir(image_dir))
+mevcut_gorseller = set(os.listdir(image_dir)) 
 
 print("Orijinal CSV okunuyor...")
 df = pd.read_csv(original_csv)
