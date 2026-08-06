@@ -10,7 +10,7 @@ NIH_LABELS = [
     'Fibrosis', 'Pleural_Thickening', 'Hernia'
 ]
 
-
+ 
 class NIHDataset(Dataset):
     def __init__(self, csv_file, img_dir, transform=None):
         self.data_frame = pd.read_csv(csv_file)
