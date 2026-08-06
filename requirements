@@ -8,4 +8,4 @@ scikit-learn
 matplotlib
 tqdm
 google-generativeai
-pytorch-grad-cam
+pytorch-grad-cam 
