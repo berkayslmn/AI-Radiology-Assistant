@@ -14,7 +14,7 @@ IMG_DIR = "veriseti/images/"
 MODEL_PATH = "models/resnet18_kalibre_edilmis_model.pth"
 BATCH_SIZE = 32
 NUM_CLASSES = 14
-
+ 
 CLASS_NAMES = ['Atelectasis', 'Cardiomegaly', 'Effusion', 'Infiltration', 'Mass',
                'Nodule', 'Pneumonia', 'Pneumothorax', 'Consolidation', 'Edema',
                'Emphysema', 'Fibrosis', 'Pleural_Thickening', 'Hernia']
