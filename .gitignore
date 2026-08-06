@@ -3,4 +3,4 @@
 veriseti/
 models/*.pth
 __pycache__/
-.idea/
+.idea/ 
