@@ -11,7 +11,7 @@ from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 
 from utils.dataset import NIH_LABELS
 from utils.report_generator import generate_medical_report
-
+ 
 try:
     with open("models/best_thresholds.json", "r") as f:
         OPTIMAL_THRESHOLDS = json.load(f)
