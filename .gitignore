@@ -1,0 +1,6 @@
+.venv/
+.streamlit/secrets.toml
+veriseti/
+models/*.pth
+__pycache__/
+.idea/

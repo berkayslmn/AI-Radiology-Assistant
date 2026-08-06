@@ -1,0 +1,11 @@
+torch
+torchvision
+streamlit
+pandas
+numpy
+Pillow
+scikit-learn
+matplotlib
+tqdm
+google-generativeai
+pytorch-grad-cam
