@@ -1,58 +1,48 @@
-# 🩺 AI-Powered Radiological Pre-Reporting Assistant
+# 🩺 AI Radiology Assistant (Uçtan Uca Karar Destek Sistemi)
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square&logo=python)
-![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-ee4c2c?style=flat-square&logo=pytorch)
-![Streamlit](https://img.shields.io/badge/Streamlit-Web%20UI-FF4B4B?style=flat-square&logo=streamlit)
-![Gemini](https://img.shields.io/badge/Gemini-LLM%20Integration-8E75B2?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+Bu proje, göğüs hastalıklarının tespiti için derin öğrenme (Deep Learning), açıklanabilir yapay zeka (XAI - Grad-CAM) ve üretken yapay zekayı (Generative AI - LLM) tek bir boru hattında (pipeline) birleştiren kapsamlı bir medikal karar destek sistemidir. 
 
-## 📌 Proje Hakkında ve Vizyon
+Sistem, NIH Chest X-ray14 veri seti üzerinde eğitilmiş olup, radyolojik bulguları tespit eder, ısı haritaları (heatmap) ile lezyon bölgelerini kanıtlar ve Gemini tabanlı doğal dil işleme modeli ile profesyonel bir tıbbi "Ön Değerlendirme Raporu" taslağı oluşturur.
 
-Modern sağlık sistemlerinde radyoloji departmanları, artan tıbbi görüntüleme talepleri nedeniyle devasa bir iş yüküyle karşı karşıyadır. Bu proje, radyologların omuzundaki bu raporlama yükünü hafifletmek, görüntü analizi süreçlerini asiste ederek hızlandırmak ve gözden kaçabilecek anomalilerde erken teşhis doğruluğunu artırmak amacıyla tasarlanmış uçtan uca (end-to-end) bir **Yapay Zekâ Karar Destek Sistemidir.**
+## 🚀 Proje Mimarisi ve Mühendislik Yaklaşımları
 
-Geleneksel medikal yapay zekâ uygulamaları görüntüyü işleyip sadece sayısal bir anomali yüzdesi sunan "siyah kutu" (black-box) modelleriyken, bu sistem **Açıklanabilir Yapay Zekâ (Explainable AI - XAI)** prensiplerini merkeze alır. Model, tespit ettiği hastalıklar için karar verirken nereye odaklandığını ısı haritalarıyla kanıtlar ve ardından bu bulguları Üretken Yapay Zekâ (GenAI) modeline aktararak, uzman hekimlerin alışkın olduğu formatta tıbbi bir ön rapor taslağı oluşturur.
+Bu proje standart bir sınıflandırma ödevinin ötesinde, tıbbi yapay zeka geliştirme süreçlerindeki regülasyonlar ve endüstri standartları göz önüne alınarak tasarlanmıştır:
 
----
+* **Patient-Wise Split (Veri Sızıntısı Koruması):** Aynı hastaya ait farklı röntgenlerin hem eğitim hem test setine düşmesi (Data Leakage) engellenmiş; hastalar %70 Eğitim, %15 Doğrulama ve %15 Test olacak şekilde izole edilmiştir.
+* **Transfer Learning & Custom Head:** `Torchvision` üzerinden `DenseNet121` omurgası kullanılmış, sınıflandırıcı katman tıbbi veri setine özel olarak (Dropout ve BCEWithLogitsLoss ile) modifiye edilmiştir.
+* **Dinamik Eşik Optimizasyonu (Threshold Calibration):** Model, standart %50 barajı yerine, her hastalık sınıfı için (Doğrulama seti üzerinden F1 skoru maksimizasyonu ile) dinamik eşikler hesaplayarak Yanlış Pozitif/Negatif (FP/FN) oranını optimize eder.
+* **Erken Durdurma (Early Stopping) & LR Scheduler:** Aşırı öğrenmeyi (Overfitting) engellemek için validasyon kaybı izlenmiş ve dinamik öğrenme oranı planlaması yapılmıştır.
+* **XAI (Grad-CAM):** Doktorlara modelin neden o teşhisi koyduğunu açıklamak adına, teşhisi etkileyen pikseller ısı haritası olarak (Weakly-supervised localization) sunulmuştur.
+* **Maliyet ve Latency Optimizasyonu:** Normal/Sağlıklı tespit edilen röntgenler için LLM API'sine istek atılmayarak gecikme süresi (latency) ve maliyet düşürülmüş, halüsinasyon riski sıfırlanmıştır.
 
-## ⚙️ Teknik Mimari ve Kullanılan Teknolojiler (Tech Stack)
+## 📊 Test Seti Performansı (ROC-AUC Skorları)
 
-Proje, ileri seviye bilgisayarlı görü yaklaşımları ile en modern büyük dil modellerini (LLM) aynı boru hattında birleştiren hibrit ve dinamik bir mimariye sahiptir:
+Modelin, eğitim sırasında **daha önce hiç görmediği** izole test seti (`test_split.csv`) üzerindeki ROC-AUC başarısı aşağıdadır:
 
-*   **Derin Öğrenme ve Bilgisayarlı Görü (Computer Vision):** PyTorch kütüphanesi üzerinde çalışan **DenseNet121** mimarisi kullanılmaktadır. Model, Transfer Learning teknikleri ile eğitilmiş olup, 14 farklı torasik anomaliyi aynı anda tespit edebilecek **Çok Etiketli Sınıflandırma (Multi-Label Classification)** yapısına sahiptir.
-*   **Açıklanabilir Yapay Zeka (XAI):** Siyah kutu problemini aşmak için **Grad-CAM (Gradient-weighted Class Activation Mapping)** algoritması entegre edilmiştir. Sistem, tespit edilen her bir hastalık için modelin evrişim (convolution) katmanlarındaki gradyanları hesaplar ve röntgen üzerinde milimetrik ısı haritaları (Heatmap) üretir.
-*   **Dinamik Karar Eşikleri (Threshold Optimization):** Yanlış negatif ve yanlış pozitif dengesini sağlamak adına sabit bir %50 eşik değeri yerine, her sınıf için ROC-AUC analizleri ve **F1-Score maksimizasyonu** ile hesaplanmış özel dinamik eşik değerleri kullanılmaktadır.
-*   **Üretken Yapay Zekâ ve Doğal Dil İşleme (GenAI & NLP):** Klinik bulguları anlamlı bir metne dönüştürmek için **Gemini LLM** kullanılmaktadır. İleri düzey Prompt Engineering teknikleri ile modelin halüsinasyon görmesi engellenmiş ve sadece CNN'den gelen kanıta dayalı, profesyonel bir *Posteroanterior (PA) Akciğer Grafisi Raporu* üretmesi sağlanmıştır.
-*   **Veri Seti:** Dünya standartlarında kabul gören **NIH Chest X-ray14** veri setinin dikkatle dengelenmiş bir alt kümesi kullanılmıştır.
-*   **Klinik Arayüz (UI):** Doktorların kodlama bilgisine ihtiyaç duymadan saniyeler içinde analiz alabileceği, medikal standartlara uygun **Streamlit** tabanlı interaktif bir arayüz geliştirilmiştir.
+| Hastalık Sınıfı | ROC-AUC Skoru | Optimum Karar Eşiği |
+| :--- | :---: | :---: |
+| **Hernia (Fıtık)** | **0.9905** | % 96.20 |
+| **Edema (Ödem)** | **0.9644** | % 90.87 |
+| **Cardiomegaly** | **0.8896** | % 78.31 |
+| **Pneumothorax** | **0.8605** | % 83.80 |
+| **Mass (Kitle)** | **0.8513** | % 77.37 |
+| **Consolidation** | **0.8486** | % 78.64 |
+| **Pleural Thickening** | **0.8436** | % 79.16 |
+| **Effusion** | **0.8388** | % 58.24 |
+| **Pneumonia** | **0.8369** | % 84.44 |
+| **Fibrosis** | **0.8288** | % 80.20 |
+| **Emphysema** | **0.8227** | % 78.80 |
+| **Nodule** | **0.7821** | % 76.36 |
+| **Atelectasis** | **0.7820** | % 59.31 |
+| **Infiltration** | **0.6770** | % 51.63 |
 
----
+## 🛠️ Kullanılan Teknolojiler (Tech Stack)
 
-## 🔄 Sistem Akışı ve Metodoloji
+* **Deep Learning Framework:** PyTorch, Torchvision
+* **XAI (Açıklanabilir YZ):** pytorch-grad-cam
+* **GenAI (LLM):** Google Gemini Pro / Flash API
+* **Veri Manipülasyonu:** Pandas, NumPy, Scikit-learn
+* **Web & UI:** Streamlit
 
-Projenin çalışma mekanizması, birbirini besleyen ardışık beş ana aşamadan oluşur:
-
-1.  **Görüntü Ön İşleme:** Sisteme yüklenen ham röntgen görüntüleri (224x224) yeniden boyutlandırılır ve ImageNet standartlarına göre normalize edilerek tensörlere dönüştürülür.
-2.  **DenseNet121 Çıkarımı:** Normalize edilmiş görüntü evrişimli sinir ağından geçirilir. Sigmoid aktivasyon fonksiyonu ile 14 farklı hastalık için `0` ile `1` arasında bağımsız olasılık skorları (logits) hesaplanır.
-3.  **Dinamik Bulgu Filtreleme:** Her bir hastalığın olasılık skoru, kalibrasyon aşamasında belirlenen kendine has optimum eşik değerinden (threshold) geçirilir. Yalnızca bu matematiksel barajı aşan bulgular sisteme dahil edilir.
-4.  **Grad-CAM Görselleştirme:** Barajı aşan her bulgu için sistem geriye dönük bir analiz yapar. Modelin o teşhisi koyarken görüntünün hangi bölgesine (örn: sağ hiler bölge, bazal alanlar) odaklandığını kanıtlayan termal ısı haritaları orijinal röntgenin üzerine giydirilir.
-5.  **LLM Ön Rapor Üretimi:** Ayıklanan bulgular "Uzman bir radyolog" personasıyla Gemini LLM'e iletilir. Model, "İnceleme Türü", "Bulgular" ve "Sonuç/Öneriler" başlıkları altında yapılandırılmış ön raporu kullanıcıya sunar.
-
----
-
-## 👨‍⚕️ Mühendislik Vizyonu ve Sürekli Geliştirme (Human-in-the-Loop)
-
-Sağlık teknolojilerinde mühendislik kadar klinik geçerlilik de hayati önem taşır. Bu proje, donanım, yazılım ve veri akışını bir bütün olarak ele alan sistem entegrasyonu disipliniyle yürütülmektedir.
-*   **Geri Bildirim Döngüsü:** Modelin karar mekanizmaları ve ürettiği tıbbi terminolojinin tutarlılığı, uzman radyolog hekimlerin geri bildirimleriyle sürekli optimize edilmektedir.
-*   **Risk ve Performans Optimizasyonu:** Erken durdurma (Early Stopping) mekanizmalarıyla aşırı öğrenme (overfitting) engellenmiş; klinik bir araca dönüşebilmesi için algoritmaların "Precision-Recall Trade-off" dengesi gerçek hayat senaryolarına göre kalibre edilmiştir.
-
----
-
-## 🛡️ Güvenlik, Gizlilik ve Etik Standartlar
-
-*   **Veri Mahremiyeti:** KVKK ve HIPAA regülasyonları gözetilerek, eğitim aşamasında kullanılan tüm veri setleri tamamen anonimleştirilmiş, açık kaynaklı akademik depolardan sağlanmıştır. Proje havuzunda veya sistem loglarında hiçbir gerçek hasta verisi veya kişisel sağlık bilgisi (PHI) barındırılmamaktadır.
-*   **Yasal Uyarı (Disclaimer):** Bu yapay zekâ asistanı kesinlikle bir **tanı cihazı değildir**. Geliştirilen sistem, hekimin yerini almayı değil, hekimin karar alma sürecini asiste etmeyi amaçlayan bir **"Karar Destek Aracıdır"**. Üretilen tüm raporlar "taslak" statüsündedir ve nihai tanı her zaman uzman bir doktorun onayına tabidir.
-
----
-
-> **Geliştirici:** Berkay Salman | Mekatronik Mühendisliği, İstanbul Ticaret Üniversitesi
-> *Bilgisayarlı Görü, Üretken Yapay Zekâ ve Sistem Entegrasyonu Uygulamalı Mühendislik Projesi*
+## ⚠️ Yasal Uyarı
+*Bu sistem klinik tanı koymak için değil, doktorların iş akışını hızlandırmak ve ikinci bir görüş (second opinion) sunmak amacıyla tasarlanmış bir ön değerlendirme (triage) aracıdır. Kesin teşhis her zaman uzman hekimler tarafından konulmalıdır.*
