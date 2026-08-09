@@ -45,5 +45,41 @@ Modelin, eğitim ve eşik optimizasyonu süreçlerinde **daha önce hiç görmed
 * **Veri Manipülasyonu:** Pandas, NumPy, Scikit-learn
 * **Web & UI:** Streamlit
 
+* # 🧠 Sistem Mimarisi
+
+```text
+Chest X-Ray
+    │
+    ▼
+Image Preprocessing
+Resize / Normalize
+    │
+    ▼
+DenseNet121
+Transfer Learning
+    │
+    ▼
+14-Class Multi-Label Logits
+    │
+    ▼
+Sigmoid Scores
+    │
+    ▼
+Class-Specific Decision Thresholds
+Youden's J
+    │
+    ├───────────────┐
+    ▼               ▼
+Predictions      Grad-CAM
+    │               │
+    └───────┬───────┘
+            ▼
+        Gemini LLM
+            │
+            ▼
+Preliminary Report Draft
+            │
+            ▼
+      Streamlit UI
 ## ⚠️ Yasal Uyarı
 *Bu sistem klinik tanı koymak için değil, doktorların iş akışını hızlandırmak ve ikinci bir görüş (second opinion) sunmak amacıyla tasarlanmış bir ön değerlendirme (triage) aracıdır. Kesin teşhis her zaman uzman hekimler tarafından konulmalıdır.*
