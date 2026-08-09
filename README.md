@@ -45,6 +45,9 @@ Modelin, eğitim ve eşik optimizasyonu süreçlerinde **daha önce hiç görmed
 * **Veri Manipülasyonu:** Pandas, NumPy, Scikit-learn
 * **Web & UI:** Streamlit
 
+## ⚠️ Yasal Uyarı
+*Bu sistem klinik tanı koymak için değil, doktorların iş akışını hızlandırmak ve ikinci bir görüş (second opinion) sunmak amacıyla tasarlanmış bir ön değerlendirme (triage) aracıdır. Kesin teşhis her zaman uzman hekimler tarafından konulmalıdır.*
+
 * # 🧠 Sistem Mimarisi
 
 ```text
@@ -82,5 +85,3 @@ Preliminary Report Draft
             ▼
       Streamlit UI
 
-## ⚠️ Yasal Uyarı
-*Bu sistem klinik tanı koymak için değil, doktorların iş akışını hızlandırmak ve ikinci bir görüş (second opinion) sunmak amacıyla tasarlanmış bir ön değerlendirme (triage) aracıdır. Kesin teşhis her zaman uzman hekimler tarafından konulmalıdır.*
