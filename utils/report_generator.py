@@ -1,21 +1,3 @@
-"""
-utils/report_generator.py
-
-Gemini LLM kullanarak CNN bulgularından yapılandırılmış bir radyoloji
-ön rapor taslağı üretir.
-
-Güncelleme (prompt sınırlandırma): Daha önce tek bir prompt şablonu
-hem "bulgu var" hem "Normal" (bulgu yok) durumları için kullanılıyordu.
-Bu, LLM'in "Normal" durumunda bile bir şeyler yorumlamaya çalışmasına
-(halüsinasyon riski) zemin hazırlıyordu. Şimdi iki senaryo ayrı ele
-alınıyor:
-    1) Bulgu YOK -> LLM'e hiç gönderilmez, sabit/şablon bir metin
-       döndürülür (daha güvenli, daha hızlı, maliyetsiz).
-    2) Bulgu VAR -> LLM'e yalnızca bulgu listesi gönderilir, prompt
-       LLM'in bulgu dışı hiçbir şey eklememesi için daha katı ifadelerle
-       sınırlandırılmıştır.
-"""
-
 import logging
 import os
 
@@ -40,78 +22,82 @@ NO_FINDING_REPORT = """**İNCELEME TÜRÜ:** Posteroanterior (PA) Akciğer Radyo
 REPORT_PROMPT_TEMPLATE = """
 Sen uzman bir radyologsun. Aşağıda bir derin öğrenme modelinin akciğer röntgeni üzerinden tespit ettiği bulgular ve model güven skorları verilmiştir.
 
-Bulgular (SADECE bunlar, başka hiçbir şey değil): {findings_text}
+Bulgular: {findings_text}
 
-GÖREV: Bu bulguları kullanarak profesyonel, tıbbi bir ön değerlendirme raporu taslağı oluştur.
+Bu bulguları kullanarak profesyonel, tıbbi bir ön değerlendirme raporu taslağı oluştur.
 
-KESİN KURALLAR (bunları ihlal etme):
-1. SADECE yukarıda verilen bulgu listesini kullan. Listede olmayan hiçbir hastalık, anomali veya bulgudan bahsetme.
-2. Görüntüyü kendin "görmüyorsun" -- yalnızca sana verilen metin bulgularını yorumluyorsun. Görmediğin detaylar (lezyon boyutu, kesin lokalizasyon, doku dansitesi vb.) hakkında spekülasyon yapma.
-3. Kesin tanı koyma. Bu bir "ön değerlendirme taslağıdır", nihai tanı değildir.
-4. Hasta kimliği, yaş, cinsiyet gibi bilgiler sana verilmedi; bunlar hakkında varsayımda bulunma.
-5. Raporun sonunda mutlaka bu çıktının bir yapay zeka ön taslağı olduğunu ve uzman hekim onayı gerektirdiğini belirt.
+Kurallar:
+1. Sadece verilen bulguları kullan.
+2. Listede olmayan hastalık veya anomali ekleme.
+3. Görüntüyü doğrudan görmediğin için lezyon boyutu, kesin lokalizasyon veya doku özellikleri hakkında varsayım yapma.
+4. Kesin tanı koyma.
+5. Hasta kimliği, yaş veya cinsiyet hakkında varsayım yapma.
+6. Raporun sonunda çıktının yapay zekâ tarafından oluşturulmuş bir ön taslak olduğunu ve uzman hekim değerlendirmesi gerektirdiğini belirt.
 
-Raporu şu başlıklarla yapılandır:
+Raporu şu başlıklarla oluştur:
+
 - İNCELEME TÜRÜ: Posteroanterior (PA) Akciğer Radyografisi
-- BULGULAR: (Yalnızca verilen bulguları tıbbi bir dille açıkla)
-- SONUÇ: (Maddeler halinde özetle ve ileri tetkik/uzman değerlendirmesi öner)
+- BULGULAR
+- SONUÇ
 """
 
 
 def _get_api_key():
-    """API anahtarını önce Streamlit secrets, sonra ortam değişkenlerinden okur."""
     try:
-        key = st.secrets.get("GEMINI_API_KEY") or st.secrets.get("GOOGLE_API_KEY")
+        key = (
+            st.secrets.get("GEMINI_API_KEY")
+            or st.secrets.get("GOOGLE_API_KEY")
+        )
+
         if key:
             return key
+
     except Exception:
-        # st.secrets bir Streamlit runtime'ı dışında çağrılırsa exception fırlatabilir.
         pass
 
-    return os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    return (
+        os.environ.get("GEMINI_API_KEY")
+        or os.environ.get("GOOGLE_API_KEY")
+    )
 
 
 def generate_medical_report(findings_text: str) -> str:
-    """CNN'den gelen bulgu metnini Gemini'ye göndererek yapılandırılmış
-    bir ön rapor taslağı üretir.
 
-    Args:
-        findings_text: Eşik değerini aşan bulguların virgülle ayrılmış
-            metni (örn. "Effusion (%78), Cardiomegaly (%65)") veya
-            bulgu yoksa NO_FINDING_TEXT sabiti.
-
-    Returns:
-        Rapor metni (Markdown formatında), ya da bir hata mesajı.
-    """
-    # Bulgu yoksa LLM'e hiç gitmiyoruz -- hem halüsinasyon riskini
-    # hem gereksiz API maliyetini ortadan kaldırır.
     if findings_text.strip() == NO_FINDING_TEXT:
         return NO_FINDING_REPORT
 
     api_key = _get_api_key()
+
     if not api_key:
-        logger.error("Gemini API anahtarı bulunamadı (secrets.toml veya ortam değişkeni).")
+        logger.error("Gemini API anahtarı bulunamadı.")
+
         return (
             "Hata: Geçerli bir API anahtarı bulunamadı. "
-            "secrets.toml dosyanızı veya GEMINI_API_KEY ortam değişkeninizi kontrol edin."
+            "secrets.toml dosyanızı veya GEMINI_API_KEY "
+            "ortam değişkeninizi kontrol edin."
         )
 
     try:
         genai.configure(api_key=api_key)
+
         model = genai.GenerativeModel(MODEL_NAME)
 
-        prompt = REPORT_PROMPT_TEMPLATE.format(findings_text=findings_text)
+        prompt = REPORT_PROMPT_TEMPLATE.format(
+            findings_text=findings_text
+        )
+
         response = model.generate_content(prompt)
 
         if not getattr(response, "text", None):
-            logger.warning(
-                "Gemini boş yanıt döndürdü. prompt_feedback=%s",
-                getattr(response, "prompt_feedback", "bilinmiyor"),
-            )
-            return "Hata: Model boş bir yanıt döndürdü (içerik güvenlik filtresine takılmış olabilir)."
+            return "Hata: Model boş bir yanıt döndürdü."
 
         return response.text
 
     except Exception as exc:
-        logger.exception("Gemini rapor üretimi sırasında hata oluştu.")
-        return f"Rapor oluşturulurken bir hata oluştu: {exc}"
+        logger.exception(
+            "Gemini rapor üretimi sırasında hata oluştu."
+        )
+
+        return (
+            f"Rapor oluşturulurken bir hata oluştu: {exc}"
+        )
