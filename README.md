@@ -1,14 +1,14 @@
 # 🩺 AI-Powered Radiological Pre-Reporting Assistant
 <p align="center">
   <img width="350" alt="Streamlit Arayüzü - Görüntü Yükleme" src="https://github.com/user-attachments/assets/1b58f32e-f7e3-4267-8bb6-7cfb34e688e0" />
-  <img width="500" alt="Model Tahmin Sonucu" src="https://github.com/user-attachments/assets/b08cb877-39e0-415d-a813-61d6f92a7bef" />
 </p>
 <p align="center">
-  <img width="350" alt="Grad-CAM Isı Haritası - Örnek 1" src="https://github.com/user-attachments/assets/d2c57bf6-e4ee-4a98-a406-7715f992eb06" />
+  <img width="1077" height="337" alt="ekran2" src="https://github.com/user-attachments/assets/5f0450ea-a506-47c4-a4a9-aa3ecd4f8602" />
+<img width="350" alt="Grad-CAM Isı Haritası - Örnek 1" src="https://github.com/user-attachments/assets/d2c57bf6-e4ee-4a98-a406-7715f992eb06" />
+</p>
+<img width="1062" height="320" alt="image" src="https://github.com/user-attachments/assets/fc90c768-46f3-485a-a743-4c0d9c34e2d1" />
   <img width="350" alt="Grad-CAM Isı Haritası - Örnek 2" src="https://github.com/user-attachments/assets/24ac36ab-5a4b-4c22-9b03-d5772229a7b6" />
 </p>
-
-
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square&logo=python)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-ee4c2c?style=flat-square&logo=pytorch)](https://pytorch.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Web%20UI-ff4b4b?style=flat-square&logo=streamlit)](https://streamlit.io/)
