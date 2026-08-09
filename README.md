@@ -1,6 +1,6 @@
 # 🩺 AI-Powered Radiological Pre-Reporting Assistant
 <img width="706" height="857" alt="ekran1" src="https://github.com/user-attachments/assets/1b58f32e-f7e3-4267-8bb6-7cfb34e688e0" /> <img width="1077" height="337" alt="ekran2" src="https://github.com/user-attachments/assets/5aea13cd-c79f-409f-a935-e701bfe9673e" />
-<img width="224" height="224" alt="ekran3" src="https://github.com/user-attachments/assets/d2c57bf6-e4ee-4a98-a406-7715f992eb06" /> <img width="224" height="224" alt="ekran3" src="https://github.com/user-attachments/assets/6296fd19-de14-4af1-b580-11b49c5dbb66" />
+<img width="224" height="224" alt="ekran3" src="https://github.com/user-attachments/assets/d2c57bf6-e4ee-4a98-a406-7715f992eb06" /> <img width="224" height="224" alt="ekran6" src="https://github.com/user-attachments/assets/24ac36ab-5a4b-4c22-9b03-d5772229a7b6" />
 
 
 
