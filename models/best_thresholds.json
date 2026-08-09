@@ -1,16 +1,16 @@
 {
-    "Atelectasis": 0.752781867980957,
-    "Cardiomegaly": 0.7771452069282532,
-    "Effusion": 0.6018691658973694,
-    "Infiltration": 0.4469303786754608,
-    "Mass": 0.801223874092102,
-    "Nodule": 0.7860084772109985,
-    "Pneumonia": 0.9807685017585754,
-    "Pneumothorax": 0.8605537414550781,
-    "Consolidation": 0.7729645371437073,
-    "Edema": 0.9819662570953369,
-    "Emphysema": 0.5115219354629517,
-    "Fibrosis": 0.7479597330093384,
-    "Pleural_Thickening": 0.8542990684509277,
-    "Hernia": 0.9351286292076111
-} 
+  "Atelectasis": 0.6,
+  "Cardiomegaly": 0.76,
+  "Effusion": 0.78,
+  "Infiltration": 0.6,
+  "Mass": 0.69,
+  "Nodule": 0.74,
+  "Pneumonia": 0.5,
+  "Pneumothorax": 0.74,
+  "Consolidation": 0.72,
+  "Edema": 0.5,
+  "Emphysema": 0.9,
+  "Fibrosis": 0.5,
+  "Pleural_Thickening": 0.8,
+  "Hernia": 0.5
+}

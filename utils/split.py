@@ -1,21 +1,3 @@
-"""
-utils/report_generator.py
-
-Gemini LLM kullanarak CNN bulgularından yapılandırılmış bir radyoloji
-ön rapor taslağı üretir.
-
-Güncelleme (prompt sınırlandırma): Daha önce tek bir prompt şablonu
-hem "bulgu var" hem "Normal" (bulgu yok) durumları için kullanılıyordu.
-Bu, LLM'in "Normal" durumunda bile bir şeyler yorumlamaya çalışmasına
-(halüsinasyon riski) zemin hazırlıyordu. Şimdi iki senaryo ayrı ele
-alınıyor:
-    1) Bulgu YOK -> LLM'e hiç gönderilmez, sabit/şablon bir metin
-       döndürülür (daha güvenli, daha hızlı, maliyetsiz).
-    2) Bulgu VAR -> LLM'e yalnızca bulgu listesi gönderilir, prompt
-       LLM'in bulgu dışı hiçbir şey eklememesi için daha katı ifadelerle
-       sınırlandırılmıştır.
-"""
-
 import logging
 import os
 
@@ -59,38 +41,23 @@ Raporu şu başlıklarla yapılandır:
 
 
 def _get_api_key():
-    """API anahtarını önce Streamlit secrets, sonra ortam değişkenlerinden okur."""
     try:
         key = st.secrets.get("GEMINI_API_KEY") or st.secrets.get("GOOGLE_API_KEY")
         if key:
             return key
     except Exception:
-        # st.secrets bir Streamlit runtime'ı dışında çağrılırsa exception fırlatabilir.
         pass
 
     return os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
 
 
 def generate_medical_report(findings_text: str) -> str:
-    """CNN'den gelen bulgu metnini Gemini'ye göndererek yapılandırılmış
-    bir ön rapor taslağı üretir.
-
-    Args:
-        findings_text: Eşik değerini aşan bulguların virgülle ayrılmış
-            metni (örn. "Effusion (%78), Cardiomegaly (%65)") veya
-            bulgu yoksa NO_FINDING_TEXT sabiti.
-
-    Returns:
-        Rapor metni (Markdown formatında), ya da bir hata mesajı.
-    """
-    # Bulgu yoksa LLM'e hiç gitmiyoruz -- hem halüsinasyon riskini
-    # hem gereksiz API maliyetini ortadan kaldırır.
     if findings_text.strip() == NO_FINDING_TEXT:
         return NO_FINDING_REPORT
 
     api_key = _get_api_key()
     if not api_key:
-        logger.error("Gemini API anahtarı bulunamadı (secrets.toml veya ortam değişkeni).")
+        logger.error("Gemini API anahtarı bulunamadı.")
         return (
             "Hata: Geçerli bir API anahtarı bulunamadı. "
             "secrets.toml dosyanızı veya GEMINI_API_KEY ortam değişkeninizi kontrol edin."
