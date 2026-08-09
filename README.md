@@ -7,6 +7,8 @@
   <img width="200" alt="Grad-CAM Örnek 1" src="https://github.com/user-attachments/assets/d2c57bf6-e4ee-4a98-a406-7715f992eb06" />
   <img width="200" alt="Grad-CAM Örnek 2" src="https://github.com/user-attachments/assets/24ac36ab-5a4b-4c22-9b03-d5772229a7b6" />
 </p>
+<img width="1045" height="762" alt="ekran7" src="https://github.com/user-attachments/assets/b08cb877-39e0-415d-a813-61d6f92a7bef" />
+
 
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square&logo=python)](https://www.python.org/)
