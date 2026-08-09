@@ -4,7 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 import torch
-from sklearn.metrics import fbeta_score
+from sklearn.metrics import f1_score, fbeta_score
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from tqdm import tqdm
@@ -59,12 +59,12 @@ def find_best_threshold_for_class(y_true_col, y_prob_col):
     support = int(y_true_col.sum())
 
     if support == 0:
-        return DEFAULT_THRESHOLD, 0.0, support
+        return DEFAULT_THRESHOLD, 0.0, support, "sabit (pozitif örnek yok)"
 
     if support < MIN_SUPPORT_FOR_TUNING:
         y_pred_col = (y_prob_col >= DEFAULT_THRESHOLD).astype(int)
         score = fbeta_score(y_true_col, y_pred_col, beta=FBETA_BETA, zero_division=0)
-        return DEFAULT_THRESHOLD, score, support
+        return DEFAULT_THRESHOLD, score, support, "sabit (az örnek)"
 
     best_threshold = DEFAULT_THRESHOLD
     best_score = -1.0
@@ -76,16 +76,26 @@ def find_best_threshold_for_class(y_true_col, y_prob_col):
             best_score = score
             best_threshold = float(threshold)
 
-    return best_threshold, best_score, support
+    y_pred_at_best = (y_prob_col >= best_threshold).astype(int)
+    if y_pred_at_best.sum() == 0:
+        fallback_threshold = DEFAULT_THRESHOLD
+        fallback_f1 = -1.0
+        for threshold in np.arange(THRESHOLD_MIN, THRESHOLD_MAX, THRESHOLD_STEP):
+            y_pred_col = (y_prob_col >= threshold).astype(int)
+            f1 = f1_score(y_true_col, y_pred_col, zero_division=0)
+            if f1 > fallback_f1:
+                fallback_f1 = f1
+                fallback_threshold = float(threshold)
+        return fallback_threshold, fallback_f1, support, "F1-fallback (F-beta sınıfı susturdu)"
+
+    return best_threshold, best_score, support, f"F{FBETA_BETA}-tarama"
 
 
 def main():
     print(f"Kullanılan Cihaz: {DEVICE}")
 
     if not os.path.exists(CSV_VAL_SPLIT_PATH):
-        raise FileNotFoundError(
-            f"{CSV_VAL_SPLIT_PATH} bulunamadı. Önce train.py çalıştırılmalı."
-        )
+        raise FileNotFoundError(f"{CSV_VAL_SPLIT_PATH} bulunamadı.")
 
     val_df = pd.read_csv(CSV_VAL_SPLIT_PATH)
     val_dataset = NIHChestXrayDataset(val_df, IMG_DIR, NIH_LABELS, transform=val_transforms)
@@ -105,12 +115,11 @@ def main():
 
     best_thresholds = {}
     for i, class_name in enumerate(NIH_LABELS):
-        threshold, score, support = find_best_threshold_for_class(y_true[:, i], y_prob[:, i])
+        threshold, score, support, method_tag = find_best_threshold_for_class(y_true[:, i], y_prob[:, i])
         best_thresholds[class_name] = round(threshold, 3)
 
-        method_tag = "sabit (az örnek)" if support < MIN_SUPPORT_FOR_TUNING else f"F{FBETA_BETA}-tarama"
         print(
-            f"{class_name:<20}: eşik={threshold:.2f}  (val F{FBETA_BETA}={score:.4f}, "
+            f"{class_name:<20}: eşik={threshold:.2f}  (skor={score:.4f}, "
             f"support={support:>3}, yöntem={method_tag})"
         )
 
