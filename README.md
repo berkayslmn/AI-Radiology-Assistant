@@ -122,7 +122,7 @@ Aşağıdaki sonuçlar, model eğitildikten ve eşikler yalnızca validation set
 
 Sağlık teknolojilerinde mühendislik kadar klinik geçerlilik de hayati önem taşır. Bu proje, donanım, yazılım ve veri akışını bir bütün olarak ele alan sistem entegrasyonu disipliniyle yürütülmektedir.
 
-- **Geri Bildirim Döngüsü:** Modelin karar mekanizmaları ve ürettiği tıbbi terminolojinin tutarlılığı, uzman radyolog hekimlerin geri bildirimleriyle sürekli optimize edilmektedir.
+- **Geri Bildirim Döngüsü:** Modelin karar mekanizmaları ve ürettiği tıbbi terminolojinin tutarlılığı, uzman radyolog hekimlerin geri bildirimleriyle sürekli optimize edilmelidir.
 - **Risk ve Performans Optimizasyonu:** Erken durdurma (Early Stopping) mekanizmalarıyla aşırı öğrenme (overfitting) engellenmiş; sınıf dengesizliği `pos_weight` ağırlıklandırmasıyla `BCEWithLogitsLoss` içinde ele alınmış; klinik bir araca dönüşebilmesi için eşik seçiminde F-beta (β=0.5) skoru kullanılarak "Precision-Recall Trade-off" dengesi bilinçli olarak Precision lehine kalibre edilmiştir. Ayrıca çıkarım anında Test-Time Augmentation (TTA) uygulanarak tahminlerin görüntüdeki küçük varyasyonlara karşı kararlılığı artırılmıştır.
 
 ### 🔭 Bilinen Sınırlamalar ve Gelecek Çalışmalar
